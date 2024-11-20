@@ -12,6 +12,17 @@ export class VectorDatabaseService {
     await this.vectorStore.addDocuments(document);
   }
 
+  async deleteDocument() {
+    const querySpec = {
+      query: 'SELECT c.id FROM c WHERE c.metadata.Tema = @tema',
+      parameters: [{ name: '@tema', value: 'calendario' }],
+    };
+
+    await this.vectorStore.delete({
+      filter: querySpec,
+    });
+  }
+
   getInstance = () => this.vectorStore;
 
   getData(question: string): any {
