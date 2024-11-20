@@ -1,4 +1,5 @@
 import { tool } from '@langchain/core/tools';
+import { createRetrieverTool } from 'langchain/tools/retriever';
 import { VectorDatabaseService } from 'src/services/vector-database/vector-database.service';
 import { z } from 'zod';
 
@@ -8,6 +9,14 @@ export class VectorSearchTool {
   async processInput(userInput: string) {
     const retriever = this.store.getInstance().asRetriever();
     return await retriever.invoke(userInput);
+  }
+
+  public getToolDefault() {
+    return createRetrieverTool(this.store.getInstance().asRetriever(), {
+      name: 'vector_database_search',
+      description:
+        'Consulta información sobre los empleados que trabajan en ceiba',
+    });
   }
 
   public getTool() {

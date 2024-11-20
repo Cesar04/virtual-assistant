@@ -9,7 +9,7 @@ export const TOOLS_PROVIDER: Provider[] = [
     useFactory: (vectorDatabaseService: VectorDatabaseService) => {
       const vectorSearchTool = new VectorSearchTool(vectorDatabaseService);
 
-      return new ToolNode([vectorSearchTool.getTool()]);
+      return new ToolNode([vectorSearchTool.getToolDefault()]);
     },
     inject: [VectorDatabaseService],
   },
