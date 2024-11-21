@@ -1,12 +1,13 @@
 import { VectorDatabaseService } from 'src/services/vector-database/vector-database.service';
 import { Vectorizer } from './vectorizer';
-import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio';
+import { WebPDFLoader } from '@langchain/community/document_loaders/web/pdf';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { Injectable } from '@nestjs/common';
 import { VectorizerInput } from 'src/models/vectorizer-input';
+import { TipoMimeEnum } from 'src/models/tipo-mime-enum';
 
 @Injectable()
-export class UrlVectorizer implements Vectorizer {
+export class PdfUrlVectorizer implements Vectorizer {
   constructor(private store: VectorDatabaseService) {}
 
   async vectorize(input: VectorizerInput) {
@@ -14,7 +15,11 @@ export class UrlVectorizer implements Vectorizer {
   }
 
   async vectorizeUrl(input: VectorizerInput) {
-    const wloader = new CheerioWebBaseLoader(input.content);
+    const response = await fetch(input.content);
+    const data = await response.blob();
+    const nike10kPDFBlob = new Blob([data], { type: TipoMimeEnum.PDF });
+
+    const wloader = new WebPDFLoader(nike10kPDFBlob);
     const wdata = await wloader.load();
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 2000,
@@ -22,6 +27,7 @@ export class UrlVectorizer implements Vectorizer {
     });
 
     const doc = await splitter.splitDocuments(wdata);
+
     doc.forEach((item) => {
       item.metadata = { ...item.metadata, ...input.metadata };
     });

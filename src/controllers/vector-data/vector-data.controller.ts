@@ -14,6 +14,6 @@ export class VectorDataController {
       body.type,
     );
 
-    return vectorizer.vectorize(body.content);
+    return vectorizer.vectorize(body);
   }
 }

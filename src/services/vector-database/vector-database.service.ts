@@ -1,5 +1,7 @@
 import { AzureCosmosDBNoSQLVectorStore } from '@langchain/azure-cosmosdb';
 import { Inject, Injectable } from '@nestjs/common';
+import { Parameter } from 'src/models/parameter';
+import { QuerySpec } from 'src/models/query-spec';
 
 @Injectable()
 export class VectorDatabaseService {
@@ -12,20 +14,36 @@ export class VectorDatabaseService {
     await this.vectorStore.addDocuments(document);
   }
 
-  async deleteDocument() {
-    const querySpec = {
-      query: 'SELECT c.id FROM c WHERE c.metadata.Tema = @tema',
-      parameters: [{ name: '@tema', value: 'calendario' }],
-    };
+  getInstance = () => this.vectorStore;
 
+  getData(question: string): any {
+    return this.vectorStore.similaritySearchWithScore(question);
+  }
+
+  async deleteDocument(metadata: Record<string, string>) {
+    const querySpec = this.buildQuerySpec(metadata);
     await this.vectorStore.delete({
       filter: querySpec,
     });
   }
 
-  getInstance = () => this.vectorStore;
+  private buildQuerySpec(metadata: Record<string, string>): QuerySpec {
+    const query = this.buildQuery(metadata);
+    const parameters = this.buildParameters(metadata);
+    return { query, parameters };
+  }
 
-  getData(question: string): any {
-    return this.vectorStore.similaritySearchWithScore(question);
+  private buildQuery(metadata: Record<string, string>): string {
+    const conditions = Object.keys(metadata).map((key, index) => {
+      return `c.metadata.${key} = @param${index}`;
+    });
+    return `SELECT c.id FROM c WHERE ${conditions.join(' AND ')}`;
+  }
+
+  private buildParameters(metadata: Record<string, string>): Parameter[] {
+    return Object.keys(metadata).map((key, index) => ({
+      name: `@param${index}`,
+      value: metadata[key],
+    }));
   }
 }

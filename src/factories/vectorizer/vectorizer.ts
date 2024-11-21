@@ -1,3 +1,5 @@
+import { VectorizerInput } from 'src/models/vectorizer-input';
+
 export interface Vectorizer {
-  vectorize(content: string): any;
+  vectorize(input: VectorizerInput): any;
 }

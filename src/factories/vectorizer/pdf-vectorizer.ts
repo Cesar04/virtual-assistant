@@ -1,23 +1,23 @@
 import { VectorDatabaseService } from 'src/services/vector-database/vector-database.service';
 import { Vectorizer } from './vectorizer';
-import { WebPDFLoader } from '@langchain/community/document_loaders/web/pdf';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { Injectable } from '@nestjs/common';
+import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
+import { TipoMimeEnum } from 'src/models/tipo-mime-enum';
+import { VectorizerInput } from 'src/models/vectorizer-input';
 
 @Injectable()
 export class PdfVectorizer implements Vectorizer {
   constructor(private store: VectorDatabaseService) {}
 
-  async vectorize(content: string) {
-    await this.vectorizeUrl(content);
+  async vectorize(input: VectorizerInput) {
+    await this.vectorizeUrl(input);
   }
 
-  async vectorizeUrl(url: string) {
-    const response = await fetch(url);
-    const data = await response.blob();
-    const nike10kPDFBlob = new Blob([data], { type: 'application/pdf' });
+  async vectorizeUrl(input: VectorizerInput) {
+    const pdfBlob = this.base64ToBlob(input.content, TipoMimeEnum.PDF);
 
-    const wloader = new WebPDFLoader(nike10kPDFBlob);
+    const wloader = new PDFLoader(pdfBlob);
     const wdata = await wloader.load();
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 2000,
@@ -27,10 +27,16 @@ export class PdfVectorizer implements Vectorizer {
     const doc = await splitter.splitDocuments(wdata);
 
     doc.forEach((item) => {
-      item.metadata['Tema'] = 'calendario';
+      item.metadata = { ...item.metadata, ...input.metadata };
     });
 
-    await this.store.deleteDocument();
+    await this.store.deleteDocument(input.metadata);
     await this.store.storeDocuments(doc);
+  }
+
+  private base64ToBlob(base64: string, mimeType: string): Blob {
+    const buffer = Buffer.from(base64, 'base64');
+
+    return new Blob([buffer], { type: mimeType });
   }
 }
