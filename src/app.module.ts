@@ -12,6 +12,7 @@ import { COGNITIVE_CHAT_PROVIDER } from './providers/cognitive-chat-provider';
 import { ChatService } from './services/chat/chat.service';
 import { TOOLS_PROVIDER } from './providers/tools-provider';
 import { ConfigModule } from '@nestjs/config';
+import { AGENTS_PROVIDER } from './providers/agents-providers';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true })],
@@ -19,6 +20,7 @@ import { ConfigModule } from '@nestjs/config';
   providers: [
     ...COGNITIVE_CHAT_PROVIDER,
     ...TOOLS_PROVIDER,
+    AGENTS_PROVIDER,
     AppService,
     GraphService,
     WhatsAppService,
