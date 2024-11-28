@@ -13,6 +13,8 @@ import { ChatService } from './services/chat/chat.service';
 import { TOOLS_PROVIDER } from './providers/tools-provider';
 import { ConfigModule } from '@nestjs/config';
 import { AGENTS_PROVIDER } from './providers/agents-providers';
+import { TOOL_SEC_INCLUCION } from './providers/tools-inclucion-provider';
+import { TOOL_SEC_HACIENDA } from './providers/tools-hacienda-provider';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true })],
@@ -21,6 +23,8 @@ import { AGENTS_PROVIDER } from './providers/agents-providers';
     ...COGNITIVE_CHAT_PROVIDER,
     ...TOOLS_PROVIDER,
     AGENTS_PROVIDER,
+    TOOL_SEC_INCLUCION,
+    TOOL_SEC_HACIENDA,
     AppService,
     GraphService,
     WhatsAppService,

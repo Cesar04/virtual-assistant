@@ -12,6 +12,11 @@ export class AgentOrchestrator {
   private _maxTokens: number = 5000;
   private _isPrincipal: boolean = true;
   private _edges: string[] = [];
+  AGENTS_MAP = {
+    agentsechacienda: 'AgentSecHacienda',
+    agentsecsalud: 'AgentSecSalud',
+    agentsecgestionhumana: 'AgentSecGestionHumana',
+  };
 
   constructor(
     @Inject('AGENT_INSTANCE')
@@ -33,16 +38,25 @@ export class AgentOrchestrator {
   }
 
   private whereToGo({ messages }: typeof MessagesAnnotation.State) {
-    // Lógica para determinar a dónde ir
-    const lastMessage = messages[messages.length - 1] as AIMessage;
-    const currentMessage = lastMessage.content.toString();
-    console.log('2. whereToGo');
-    console.log(currentMessage);
-    if (currentMessage.includes('AgentSecInovacion'))
-      return 'AgentSecInovacion';
-    if (currentMessage.includes('AgentSecInclucion'))
-      return 'AgentSecInclucion';
+    const lastMessage = this.getLastMessageContent(messages);
+    const agentKey = this.cleanMessage(lastMessage);
+    const agent = this.findAgent(agentKey);
 
-    return '__end__';
+    return agent || '__end__';
+  }
+
+  // Función para obtener el contenido del último mensaje
+  private getLastMessageContent(messages: AIMessage[]): string {
+    return messages[messages.length - 1].content.toString().toLowerCase();
+  }
+
+  // Función para limpiar el mensaje
+  private cleanMessage(message: string): string {
+    return message.replace(/\s /g, '').toLowerCase();
+  }
+
+  // Función para encontrar el agente
+  private findAgent(agentKey: string): string | undefined {
+    return this.AGENTS_MAP[agentKey];
   }
 }

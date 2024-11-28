@@ -39,20 +39,49 @@ export class GraphService {
   }
 
   private initializeGraph() {
-    this.callAgent = this.callAgent.bind(this);
-
     this.workflow = new StateGraph(MessagesAnnotation);
 
     this.addNodes();
     this.addEdges();
     this.addConditionalEdges();
 
+    /*
+    this.ConfiguracionManual();*/
+
     this.app = this.workflow.compile({
       checkpointer: this.agentDbCheckpointer,
     });
   }
 
+  private ConfiguracionManual() {
+    const agentOrchestrator = this.agents[0];
+    const agentSecHacienda = this.agents[1];
+    this.callAgent = this.callAgent.bind(this);
+
+    this.workflow.addNode(agentOrchestrator.name, (state) =>
+      this.callAgent(agentOrchestrator, state),
+    );
+
+    this.workflow.addNode(agentSecHacienda.name, (state) =>
+      this.callAgent(agentSecHacienda, state),
+    );
+
+    this.workflow.addNode(agentSecHacienda.toolName, agentSecHacienda.toolNode);
+
+    this.workflow.addEdge('__start__', agentOrchestrator.name);
+    this.workflow.addEdge(agentSecHacienda.toolName, agentSecHacienda.name);
+
+    this.workflow.addConditionalEdges(agentOrchestrator.name, (state) =>
+      agentOrchestrator.conditionalEdges(state),
+    );
+
+    this.workflow.addConditionalEdges(agentSecHacienda.name, (state) =>
+      agentSecHacienda.conditionalEdges(state),
+    );
+  }
+
   private addNodes() {
+    this.callAgent = this.callAgent.bind(this);
     this.agents.forEach((agentConfig) => {
       this.workflow.addNode(agentConfig.name, (state) =>
         this.callAgent(agentConfig, state),

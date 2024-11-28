@@ -22,7 +22,7 @@ export class PdfUrlVectorizer implements Vectorizer {
     const wloader = new WebPDFLoader(nike10kPDFBlob);
     const wdata = await wloader.load();
     const splitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 2000,
+      chunkSize: 1000,
       chunkOverlap: 200,
     });
 

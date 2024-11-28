@@ -6,10 +6,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AgentConfig } from 'src/models/agent-config';
 
 @Injectable()
-export class AgentSecInclucionSocialService {
-  private _name: string = 'AgentSecInclucion';
-  private _toolName: string = 'ToolSecInclucion';
-  private _prompt: string = process.env.agentPromptInclucion;
+export class AgentSecHaciendaService {
+  private _name: string = 'AgentSecHacienda';
+  private _toolName: string = 'ToolSecHacienda';
+  private _prompt: string = process.env.agentPromptHacienda;
   private _maxTokens: number = 5000;
   private _isPrincipal: boolean = false;
   private _edges: string[] = ['AgentOrchestrator'];
@@ -17,7 +17,7 @@ export class AgentSecInclucionSocialService {
   constructor(
     @Inject('AGENT_INSTANCE')
     private readonly agentModel: AzureChatOpenAI,
-    @Inject('TOOL_SEC_INCLUCION')
+    @Inject('TOOL_SEC_HACIENDA')
     private readonly toolNode: ToolNode,
   ) {}
 
