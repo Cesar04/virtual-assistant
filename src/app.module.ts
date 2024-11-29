@@ -15,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AGENTS_PROVIDER } from './providers/agents-providers';
 import { TOOL_SEC_INCLUCION } from './providers/tools-inclucion-provider';
 import { TOOL_SEC_HACIENDA } from './providers/tools-hacienda-provider';
+import { TOOL_SEC_GESTION_HUMANA } from './providers/tools-gestion-humana-provider';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true })],
@@ -25,6 +26,7 @@ import { TOOL_SEC_HACIENDA } from './providers/tools-hacienda-provider';
     AGENTS_PROVIDER,
     TOOL_SEC_INCLUCION,
     TOOL_SEC_HACIENDA,
+    TOOL_SEC_GESTION_HUMANA,
     AppService,
     GraphService,
     WhatsAppService,

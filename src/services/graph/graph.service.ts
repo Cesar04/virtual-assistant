@@ -140,7 +140,7 @@ export class GraphService {
       {
         messages: [new HumanMessage(humanMessage)],
       },
-      { configurable: { thread_id: reqid } },
+      { configurable: { thread_id: reqid }, recursionLimit: 10 },
     );
 
     const agentResponse = response.messages[response.messages.length - 1];
